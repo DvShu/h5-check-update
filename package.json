@@ -1,0 +1,24 @@
+{
+  "name": "h5-check-update",
+  "version": "0.0.1",
+  "description": "H5页面检查更新并提示",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DvShu/h5-check-update.git"
+  },
+  "keywords": [
+    "h5",
+    "update",
+    "check-update"
+  ],
+  "author": "lucidus <tenny.shu@foxmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DvShu/h5-check-update/issues"
+  },
+  "homepage": "https://github.com/DvShu/h5-check-update#readme"
+}
