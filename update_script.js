@@ -1,5 +1,6 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const argvs = process.argv.slice(2);
 
@@ -16,6 +17,21 @@ if (argvs[0] === "update") {
 		}
 	}
 	updateVersion(publicDir, version);
+} else if (argvs[0] === "init") {
+	init();
+}
+
+function init() {
+	const __dirname = path.dirname(fileURLToPath(import.meta.url));
+	Promise.all([readFile("package.json", "utf-8")]).then((a) => {
+		const pkg = JSON.parse(a[0]);
+		const scripts = pkg.scripts || {};
+		scripts.update = "node h5-check-update/update_script.js update";
+		scripts.build = `${scripts.build} & npm run update`;
+		return Promise.all([
+			writeFile("package.json", JSON.stringify(pkg, null, 2)),
+		]);
+	});
 }
 
 function updateVersion(publicDir, version) {
@@ -62,8 +78,12 @@ function updateVersion(publicDir, version) {
 			const packageJson = JSON.parse(data[1]);
 			const dataJson = data[0];
 			packageJson.version = dataJson.version;
-			dataJson.name = packageJson.name;
-			dataJson.description = packageJson.description || "";
+			if (dataJson.name == null) {
+				dataJson.name = packageJson.name;
+			}
+			if (dataJson.description == null) {
+				dataJson.description = packageJson.description || "";
+			}
 			return Promise.all([
 				writeFile(filepath, JSON.stringify(dataJson, null, 2), "utf-8"),
 				writeFile(
