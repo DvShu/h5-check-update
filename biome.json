@@ -6,10 +6,14 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			}
 		}
 	},
 	"files": {
-		"include": ["src/**/*.ts", "update_script.js"]
+		"include": ["src/**/*.ts", "update_script.js"],
+		"ignore": ["index.js"]
 	}
 }
