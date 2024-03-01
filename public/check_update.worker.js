@@ -34,7 +34,7 @@ addEventListener("message", ({ data }) => {
 	if (data.type === "check") {
 		checkUpdate();
 		// 每3分钟检查一次更新
-		taskId = setInterval(checkUpdate, 5000); // 180,000 = 3 * 60 * 1000
+		taskId = setInterval(checkUpdate, 300000); // 300000 = 3 * 60 * 1000
 	}
 	if (data.type === "pause") {
 		clearInterval(taskId);
@@ -44,5 +44,3 @@ addEventListener("message", ({ data }) => {
 		close();
 	}
 });
-
-console.log();

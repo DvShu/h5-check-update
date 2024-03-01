@@ -7,7 +7,7 @@ const inputFiles = ["main.ts", "main.js"];
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 let argvs = process.argv;
-argvs = argvs.slice(argvs[0] === "node" ? 2 : 1);
+argvs = argvs.slice(2);
 
 if (argvs[0] === "update") {
 	// 更新版本
@@ -71,7 +71,7 @@ function sourceImport() {
 					break;
 				}
 			}
-			if (inputFile !== "" && content.indexOf("h5-check-update") !== -1) {
+			if (inputFile !== "" && content.indexOf("h5-check-update") === -1) {
 				content = `import "h5-check-update";\n${content}`;
 				return writeFile(path.join(dir, inputFile), content);
 			}
