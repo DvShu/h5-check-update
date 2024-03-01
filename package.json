@@ -9,8 +9,7 @@
 		"dev": "vite",
 		"build": "tsc && vite build",
 		"preview": "vite preview",
-		"check": "npx @biomejs/biome check ./",
-		"uinit": "node cli.js init"
+		"check": "npx @biomejs/biome check ./"
 	},
 	"bin": {
 		"h5-check-update": "./bin.js"
