@@ -44,3 +44,5 @@ addEventListener("message", ({ data }) => {
 		close();
 	}
 });
+
+console.log();
