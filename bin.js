@@ -13,15 +13,19 @@ if (argvs[0] === "update") {
   // 更新版本
   let version = null;
   let publicDir = "dist";
+  let updatePackage = false;
   for (const item of argvs) {
     if (item.startsWith("--version=")) {
       version = item.replace("--version=", "");
     }
-    if (item.startsWith("--publicDir=")) {
-      publicDir = item.replace("--publicDir=", "");
+    if (item.startsWith("--public-dir=")) {
+      publicDir = item.replace("--public-dir=", "");
+    }
+    if (item.startsWith("--update-package")) {
+      updatePackage = true;
     }
   }
-  updateVersion(publicDir, version);
+  updateVersion(publicDir, version, updatePackage);
 } else if (argvs[0] === "init") {
   init();
 } else if (argvs[0] === "version") {
@@ -48,61 +52,56 @@ function showVersion() {
   });
 }
 
-function readSource(src) {
-  return readFile(src, "utf-8")
-    .then((data) => {
-      return Promise.resolve(data);
-    })
-    .catch(() => {
-      return Promise.resolve(0);
-    });
+async function readSource(src) {
+  let content;
+  try {
+    content = await readFile(src, "utf-8");
+  } catch (error) {
+    content = 0;
+  }
+  return content;
 }
 
-function sourceImport() {
+async function sourceImport() {
   const dir = path.join(process.cwd(), "src");
-  return Promise.all(inputFiles.map((f) => readSource(path.join(dir, f)))).then(
-    (a) => {
-      let inputFile = "";
-      let content = "";
-      for (let i = 0, len = a.length; i < len; i++) {
-        if (a[i] !== 0) {
-          inputFile = inputFiles[i];
-          content = a[i];
-          break;
-        }
-      }
-      if (inputFile !== "" && content.indexOf("h5-check-update") === -1) {
-        content = `import "h5-check-update";\n${content}`;
-        return writeFile(path.join(dir, inputFile), content);
-      }
-      return Promise.resolve(0);
-    }
+  const a = await Promise.all(
+    inputFiles.map((f) => readSource(path.join(dir, f)))
   );
+  let inputFile = "";
+  let content = "";
+  for (let i = 0, len = a.length; i < len; i++) {
+    if (a[i] !== 0) {
+      inputFile = inputFiles[i];
+      content = a[i];
+      break;
+    }
+  }
+  if (inputFile !== "" && content.indexOf("h5-check-update") === -1) {
+    content = `import "h5-check-update";\n${content}`;
+    await writeFile(path.join(dir, inputFile), content);
+  }
 }
 
-function init() {
+async function init() {
   console.log("正在初始化 h5 更新检查服务……");
-  Promise.all([
-    readFile("package.json", "utf-8"),
-    cp(path.join(__dirname, "public"), path.join(process.cwd(), "public"), {
-      recursive: true,
-    }),
-    sourceImport(),
-  ])
-    .then((a) => {
-      // package.json
-      const pkg = JSON.parse(a[0]);
-      const scripts = pkg.scripts || {};
-      scripts.update = "h5-check-update update";
-      scripts.build = `${scripts.build} & npm run update`;
-      return writeFile("package.json", JSON.stringify(pkg, null, 2));
-    })
-    .then(() => {
-      console.log("初始化 h5 更新检查服务成功");
-    })
-    .catch(() => {
-      console.log("初始化 h5 更新检查服务失败");
-    });
+  try {
+    const a = await Promise.all([
+      readFile("package.json", "utf-8"),
+      cp(path.join(__dirname, "public"), path.join(process.cwd(), "public"), {
+        recursive: true,
+      }),
+      sourceImport(),
+    ]);
+    // package.json
+    const pkg = JSON.parse(a[0]);
+    const scripts = pkg.scripts || {};
+    scripts.update = "h5-check-update update";
+    scripts.build = `${scripts.build} & npm run update`;
+    await writeFile("package.json", JSON.stringify(pkg, null, 2));
+    console.log("初始化 h5 更新检查服务成功");
+  } catch (error) {
+    console.log("初始化 h5 更新检查服务失败");
+  }
 }
 
 function updateVersion(publicDir, version) {
@@ -155,14 +154,19 @@ function updateVersion(publicDir, version) {
       if (dataJson.description == null) {
         dataJson.description = packageJson.description || "";
       }
-      return Promise.all([
+      const q = [
         writeFile(filepath, JSON.stringify(dataJson, null, 2), "utf-8"),
-        writeFile(
-          "package.json",
-          JSON.stringify(packageJson, null, 2),
-          "utf-8"
-        ),
-      ]);
+      ];
+      if (updateVersion === true) {
+        q.push(
+          writeFile(
+            "package.json",
+            JSON.stringify(packageJson, null, 2),
+            "utf-8"
+          )
+        );
+      }
+      return Promise.all(q);
     })
     .then(() => {
       console.log("写入更新文件成功");

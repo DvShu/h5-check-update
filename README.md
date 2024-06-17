@@ -46,10 +46,11 @@ Add the following code to the `scripts` in `package.json`:
 "update": "h5-check-update update"
 ```
 
-Optional parameters: `--publicDir=public`、`--version=1.0.0`
+Optional parameters: `--public-dir=public`、`--version=1.0.0`、`--update-package`
 
-1. `--publicDir=x`: Directory of the generated manifest.json file.
+1. `--public-dir=x`: Directory of the generated manifest.json file.
 2. `--version=0.0.1`: version; Defaults is the last version number plus 1.
+3. `--update-package`: Whether to update the `package.json`.
 
 ### 2. `init`
 
