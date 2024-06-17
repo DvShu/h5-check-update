@@ -2,6 +2,7 @@
 import { cp, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { styleText } from "node:util";
 
 const inputFiles = ["main.ts", "main.js"];
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -47,9 +48,14 @@ if (argvs[0] === "update") {
   console.log(helpContent.join("\r\n"));
 }
 
+async function getPackageInfo() {
+  let content = readFile(path.join(__dirname, "package.json"), "utf-8");
+  return JSON.parse(content);
+}
+
 function showVersion() {
-  readFile(path.join(__dirname, "package.json"), "utf-8").then((data) => {
-    console.log(`v${JSON.parse(data).version}`);
+  getPackageInfo().then((data) => {
+    console.log(`v${data.version}`);
   });
 }
 
@@ -99,16 +105,23 @@ async function init() {
     scripts.update = "h5-check-update update --update-package";
     scripts.build = `${scripts.build} & npm run update`;
     await writeFile("package.json", JSON.stringify(pkg, null, 2));
-    console.log("初始化 h5 更新检查服务成功");
+    log("初始化 h5 更新检查服务成功");
   } catch (error) {
-    console.log("初始化 h5 更新检查服务失败");
+    log("初始化 h5 更新检查服务失败", "error");
   }
+}
+
+function log(msg, type = "info") {
+  return console.log(
+    styleText("blue", "h5-check-update") +
+      " " +
+      styleText(type === "error" ? "red" : "green", msg)
+  );
 }
 
 function updateVersion(publicDir, version) {
   const filepath = path.join(publicDir, "manifest.json");
-
-  console.log("开始写入更新文件");
+  log("开始写入更新文件");
   readFile(filepath, "utf-8")
     .then(
       (data) => {
@@ -170,10 +183,10 @@ function updateVersion(publicDir, version) {
       return Promise.all(q);
     })
     .then(() => {
-      console.log("写入更新文件成功");
+      log("写入更新文件成功");
     })
     .catch((e) => {
       console.error(e);
-      console.log("写入更新文件失败");
+      log("写入更新文件失败", "error");
     });
 }

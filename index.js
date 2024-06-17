@@ -1,4 +1,4 @@
-let t = new Worker("check_update.worker.js");
+let t = new Worker("/check_update.worker.js");
 function l({ data: e }) {
   e.type === "update" && p();
 }
