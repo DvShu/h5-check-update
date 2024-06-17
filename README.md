@@ -20,7 +20,7 @@ import "h5-check-update";
 
 ### 2. Worker
 
-Save `check_update.worker.js` to the project root directory
+Save `check_update.worker.js` to the `public` directory
 
 ## Methods
 
