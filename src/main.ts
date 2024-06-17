@@ -31,7 +31,7 @@ function showUpdateNotify() {
   document.body.appendChild($notify);
   cancelTaskId = setTimeout(() => {
     close();
-  }, 3000);
+  }, 60000);
 
   function close() {
     if ($notify != null) {
