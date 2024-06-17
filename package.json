@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
   "name": "h5-check-update",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "H5 page checks for updates and alerts",
   "main": "index.js",
   "type": "module",

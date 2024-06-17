@@ -37,8 +37,9 @@ if (argvs[0] === "update") {
     "Commands:",
     "update [options]  每次上线部署时调用, 生成manifest.json用于检查提示更新, 同时更新package.json版本号",
     "  update options:",
-    "    --publicDir  manifest.json文件生成的路径, 放到前端静态目录下, 默认为: public",
-    "    --version    指定升级版本号, 如果不指定, 则读取获取原来的版本然后+1",
+    "    --public-dir      manifest.json文件生成的路径, 放到前端静态目录下, 默认为: public",
+    "    --version         指定升级版本号, 如果不指定, 则读取获取原来的版本然后+1",
+    "    --update-package  是否更新 package.json 文件, 默认不更新",
     "init               初始化检查, package.json中添加update命令、生成worker文件、入口文件中引入检查",
     "help               显示帮助信息",
     "version            显示当前版本号",
@@ -95,7 +96,7 @@ async function init() {
     // package.json
     const pkg = JSON.parse(a[0]);
     const scripts = pkg.scripts || {};
-    scripts.update = "h5-check-update update";
+    scripts.update = "h5-check-update update --update-package";
     scripts.build = `${scripts.build} & npm run update`;
     await writeFile("package.json", JSON.stringify(pkg, null, 2));
     console.log("初始化 h5 更新检查服务成功");
