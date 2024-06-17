@@ -69,6 +69,15 @@ async function readSource(src) {
   return content;
 }
 
+async function readManifest(manifestPath) {
+  try {
+    let content = readFile(filepath, "utf-8");
+    return JSON.parse(content);
+  } catch (error) {
+    return {};
+  }
+}
+
 async function sourceImport() {
   const dir = path.join(process.cwd(), "src");
   const a = await Promise.all(
@@ -119,59 +128,31 @@ function log(msg, type = "info") {
   );
 }
 
-function updateVersion(publicDir, version) {
+function updateVersion(publicDir, version, updatePackage) {
   const filepath = path.join(publicDir, "manifest.json");
   log("开始写入更新文件");
-  readFile(filepath, "utf-8")
-    .then(
-      (data) => {
-        let dataJson = {
-          version: "0.0.0",
-        };
-        try {
-          dataJson = JSON.parse(data);
-          if (!Object.hasOwn(dataJson, "version")) {
-            dataJson.version = "0.0.0";
-          }
-        } catch (e) {
-          return e;
-        }
-        if (version == null) {
-          const versions = dataJson.version.split(".");
-          versions[2] = parseInt(versions[2]) + 1;
-          dataJson.version = versions.join(".");
-        } else {
-          dataJson.version = version;
-        }
-        return Promise.all([
-          Promise.resolve(dataJson),
-          readFile("package.json", "utf-8"),
-        ]);
-      },
-      (err) => {
-        const dataJson = {
-          version: version || "0.0.1",
-        };
-        return Promise.all([
-          Promise.resolve(dataJson),
-          readFile("package.json", "utf-8"),
-        ]);
+  Promise.all([readManifest(filepath), readFile("package.json", "utf-8")])
+    .then((a) => {
+      a[1] = JSON.parse(a[1]);
+      if (a[0].version == null) {
+        a[0].version = a[1].version;
       }
-    )
-    .then((data) => {
-      const packageJson = JSON.parse(data[1]);
-      const dataJson = data[0];
-      packageJson.version = dataJson.version;
-      if (dataJson.name == null) {
-        dataJson.name = packageJson.name;
+      return Promise.resolve(a);
+    })
+    .then((a) => {
+      if (version == null) {
+        const versions = a[0].version.split(".");
+        versions[2] = parseInt(versions[2]) + 1;
+        a[0].version = versions.join(".");
+      } else {
+        a[0].version = version;
       }
-      if (dataJson.description == null) {
-        dataJson.description = packageJson.description || "";
-      }
+      a[0].name = a[1].name;
+      a[0].description = a[1].description || "";
       const q = [
         writeFile(filepath, JSON.stringify(dataJson, null, 2), "utf-8"),
       ];
-      if (updateVersion === true) {
+      if (updatePackage === true) {
         q.push(
           writeFile(
             "package.json",

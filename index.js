@@ -17,7 +17,7 @@ function p() {
     e.style.opacity = "1", e.style.transform = "translate3d(0,0,0)";
   }), e.innerHTML = i.join(""), e.addEventListener("click", a), document.body.appendChild(e), o = setTimeout(() => {
     s();
-  }, 3e3);
+  }, 6e4);
   function s() {
     e != null && (e.removeEventListener("click", a), e.style.opacity = "0", e.style.transform = "translate3d(0, calc(100% + 15px), 0)", setTimeout(() => {
       document.body.removeChild(e), e = null;
