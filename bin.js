@@ -149,16 +149,10 @@ function updateVersion(publicDir, version, updatePackage) {
       }
       a[0].name = a[1].name;
       a[0].description = a[1].description || "";
-      const q = [
-        writeFile(filepath, JSON.stringify(dataJson, null, 2), "utf-8"),
-      ];
+      const q = [writeFile(filepath, JSON.stringify(a[0], null, 2), "utf-8")];
       if (updatePackage === true) {
         q.push(
-          writeFile(
-            "package.json",
-            JSON.stringify(packageJson, null, 2),
-            "utf-8"
-          )
+          writeFile("package.json", JSON.stringify(a[1], null, 2), "utf-8")
         );
       }
       return Promise.all(q);

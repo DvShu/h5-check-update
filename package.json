@@ -1,6 +1,6 @@
 {
   "name": "h5-check-update",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "H5 page checks for updates and alerts",
   "main": "index.js",
   "type": "module",
