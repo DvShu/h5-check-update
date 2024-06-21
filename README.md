@@ -1,6 +1,6 @@
 # h5-check-update
 
-H5 page checks for updates and alerts; Depends on manifest.json.
+H5 page checks for updates and alerts; The implementation detects changes in the hash of the index.js file introduced by the source server.
 
 ## Install
 
@@ -38,24 +38,12 @@ Stop checking for updates, close the worker, and free up resources.
 
 ## Command
 
-### 1. `update`
+### 1. `init`
 
-Add the following code to the `scripts` in `package.json`:
+1. import `h5-check-update`
+2. add `check_update.worker.js`.
 
-```json
-"update": "h5-check-update update"
-```
-
-Optional parameters: `--public-dir=public`、`--version=1.0.0`、`--update-package`
-
-1. `--public-dir=x`: Directory of the generated manifest.json file.
-2. `--version=0.0.1`: version; Defaults is the last version number plus 1.
-3. `--update-package`: Whether to update the `package.json`.
-
-### 2. `init`
-
-Import `h5-check-update`、add `check_update.worker.js`、add `update` scripts.
-例如:
+example:
 
 ```shell
 h5-check-update init
