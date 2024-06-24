@@ -71,7 +71,7 @@ async function readSource(src) {
 
 async function readManifest(manifestPath) {
   try {
-    let content = readFile(filepath, "utf-8");
+    let content = await readFile(manifestPath, "utf-8");
     return JSON.parse(content);
   } catch (error) {
     return {};
