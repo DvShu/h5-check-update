@@ -17,7 +17,7 @@ let version = "";
 async function checkUpdate() {
   try {
     // 检测前端资源是否有更新
-    const response = await fetch(`/`, {
+    const response = await fetch(`/t=${Date.now()}}`, {
       method: "GET",
     });
     // 获取最新的etag和data
